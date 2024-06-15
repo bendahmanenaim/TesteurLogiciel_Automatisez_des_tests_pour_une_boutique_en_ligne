@@ -9,7 +9,7 @@ describe('Smoke Tests login', () => {
   
     it('Vérifie la présence des boutons d’ajout au panier quand vous êtes connecté', () => {
       // Remplissez les champs de connexion
-      cy.get("[data-cy='login-input-username']").type('test1@test.fr');
+      cy.get("[data-cy='login-input-username']").type('test2@test.fr');
       cy.get("[data-cy='login-input-password']").type('testtest');
   
       // Soumettez le formulaire de connexion
