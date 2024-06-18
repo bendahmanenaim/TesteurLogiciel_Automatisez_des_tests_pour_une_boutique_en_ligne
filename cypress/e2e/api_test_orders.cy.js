@@ -1,13 +1,13 @@
 describe('API Tests for Orders', () => {
-    const baseUrl = 'http://localhost:4200/';
+    const baseUrl = 'http://localhost:8081';
   
     it('Requête de la liste des produits du panier', () => {
       // Authentification de l'utilisateur avant de faire la requête
       cy.request({
         method: 'POST',
-        url: `${baseUrl}/api/login`, // Assurez-vous que cette URL est correcte
+        url: `${baseUrl}/login`, 
         body: {
-          username: 'test1@test.fr',
+          username: 'test2@test.fr',
           password: 'testtest'
         },
         failOnStatusCode: false // Pour éviter l'échec sur les codes de statut 4xx ou 5xx
@@ -23,8 +23,20 @@ describe('API Tests for Orders', () => {
           }
         }).then((response) => {
           expect(response.status).to.eq(200);
-          expect(response.body).to.be.an('array'); 
-          // Ajoutez des vérifications supplémentaires selon les besoins
+          cy.log('Réponse de la commande:', JSON.stringify(response.body));
+          // Vérifiez que le corps de la réponse est un objet
+        expect(response.body).to.be.an('object');
+        
+        // Vérifiez que la commande a les propriétés attendues
+        expect(response.body).to.have.property('id');
+        expect(response.body).to.have.property('firstname');
+        expect(response.body).to.have.property('lastname');
+        expect(response.body).to.have.property('address');
+        expect(response.body).to.have.property('zipCode');
+        expect(response.body).to.have.property('city');
+        expect(response.body).to.have.property('date');
+        expect(response.body).to.have.property('validated');
+        
         });
       });
     });
