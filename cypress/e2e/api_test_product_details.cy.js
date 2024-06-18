@@ -3,7 +3,7 @@ describe('API Tests for Product Details', () => {
     const productId = 4; // ID du produit spécifique que vous souhaitez tester
   
     it('Requête d’une fiche produit spécifique', () => {
-      // Authentification de l'utilisateur avant de faire la requête (si nécessaire)
+      // Authentification de l'utilisateur avant de faire la requête 
       cy.request({
         method: 'POST',
         url: `${baseUrl}/login`,
@@ -14,7 +14,7 @@ describe('API Tests for Product Details', () => {
         failOnStatusCode: false // Pour éviter l'échec sur les codes de statut 4xx ou 5xx
       }).then((loginResponse) => {
         expect(loginResponse.status).to.eq(200); // Vérifiez que la connexion a réussi
-        const token = loginResponse.body.token; // Assurez-vous de récupérer le token ou tout autre élément d'authentification nécessaire
+        const token = loginResponse.body.token; 
         cy.log('Token reçu :', token);
   
         // Envoi de la requête pour obtenir la fiche produit spécifique
