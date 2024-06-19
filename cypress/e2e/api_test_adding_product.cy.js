@@ -20,30 +20,33 @@ describe('API Tests for Adding Product to Cart', () => {
   
         // Envoi de la requête pour ajouter un produit au panier
         cy.request({
-          method: 'Put',
+          method: 'PUT',
           url: `${baseUrl}/orders/add`,
           headers: {
             Authorization: `Bearer ${token}`
           },
           body: {
-            productId: productId,
+            product: productId,
             quantity: quantity
-          }
+          },
+          failOnStatusCode: false
         }).then((response) => {
-          expect(response.status).to.eq(200);
   
           // Affiche la réponse après avoir ajouté le produit au panier
           cy.log('Réponse après ajout au panier:', JSON.stringify(response.body));
-  
+          // Vérifie le statut de la réponse
+          expect(response.status).to.eq(200);
+
           // Vérifiez que le corps de la réponse est un objet
           expect(response.body).to.be.an('object');
   
           // Vérifiez que la réponse contient les informations attendues
-          expect(response.body).to.have.property('id');
-          expect(response.body).to.have.property('productId', productId);
-          expect(response.body).to.have.property('quantity', quantity);
-          expect(response.body).to.have.property('orderLines');
-  
+           expect(response.body).to.have.property('id');
+           expect(response.body).to.have.property('orderLines');
+           expect(response.body.orderLines).to.be.an('array');
+           const orderLine = response.body.orderLines.find(line => line.product.id === productId);
+           expect(orderLine).to.not.be.undefined;
+           expect(orderLine.quantity).to.be.at.least(quantity);
           // Affiche les détails de la réponse
           cy.log('Détails de la commande:', JSON.stringify(response.body));
         });
