@@ -30,21 +30,21 @@ Suivez ces étapes pour cloner, installer et exécuter le projet EcoBlissBath.
 
 ### Cloner le Projet
 
-```bash
-git clone https://github.com/votre-utilisateur/EcoBlissBath.git
-cd EcoBlissBath
+
+git https://github.com/bendahmanenaim/TesteurLogiciel_Automatisez_des_tests_pour_une_boutique_en_ligne.git
+
 
 ### Installer les Dependances
 
 
 `Backend`
 cd backend
-npm install
+`npm install`
 
 `Frontend`
 
 cd frontend
-npm install
+`npm install`
 
 ### Lancer_l_Application avec Docker Compose
 
@@ -52,19 +52,19 @@ Assurez-vous d'être dans le répertoire racine du projet (EcoBlissBath) puis ex
 
 **_docker-compose up --build_**
 
-### Execution_des Tests Cypress
+#### Execution_des Tests Cypress
 
 Pour ouvrir l'interface graphique de Cypress et exécuter les tests :
 
 cd frontend
-npm install cypress --save-dev
+`npm install cypress --save-dev`
 
 **_Exécution des Tests Cypress_**
 
-npx cypress open
+`npx cypress open`
 Cela ouvrira l'interface graphique de Cypress où vous pourrez exécuter les tests. Alternativement, vous pouvez exécuter les tests en mode headless :
 
-npx cypress run
+`npx cypress run`
 
 #### Informations de Connexion pour les Tests
 
@@ -76,11 +76,11 @@ npx cypress run
 - 1.0.0 : Version initiale de l'application.
 - 2.0.0 : Ajout de nouvelles fonctionnalités, optimisation des performances et correction de bugs.
 
-## Auteur
+##### Auteur
 
 - Nom : Bendahmane Naim
 
-## Avantages de Cypress
+###### Avantages de Cypress
 
 - Facilité d'Utilisation : Cypress est conçu pour être facile à installer et à utiliser, même pour les débutants.
 - Test en Temps Réel : Permet de voir les tests s'exécuter en temps réel dans un navigateur.
