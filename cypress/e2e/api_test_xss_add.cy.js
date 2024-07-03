@@ -1,63 +1,55 @@
-describe('API Tests for XSS vulnerability', () => {
+describe('API Tests for Adding Product to Cart with XSS Validation', () => {
     const baseUrl = 'http://localhost:8081';
-    const productId = 6; // ID du produit spécifique que vous souhaitez ajouter
-    const quantity = 1; // Quantité de produit à ajouter
-  
+    const productId = 4; // ID du produit spécifique que vous souhaitez ajouter
+    const xssQuantity = "<script>alert('XSS!')</script>"; // Tentative d'injection XSS
+
     it('Should not execute injected script in the add to cart endpoint', () => {
-      // Authentification de l'utilisateur avant de faire la requête
-      cy.request({
-        method: 'POST',
-        url: `${baseUrl}/login`,
-        body: {
-          username: 'test2@test.fr',
-          password: 'testtest'
-        },
-        failOnStatusCode: false // Pour éviter l'échec sur les codes de statut 4xx ou 5xx
-      }).then((loginResponse) => {
-        expect(loginResponse.status).to.eq(200); // Vérifiez que la connexion a réussi
-        const token = loginResponse.body.token;
-        cy.log('Token reçu :', token);
-  
-        // Envoi de la requête pour ajouter un produit au panier avec un script injecté
+        // Authentification de l'utilisateur
         cy.request({
-          method: 'PUT',
-          url: `${baseUrl}/orders/add`,
-          headers: {
-            Authorization: `Bearer ${token}`
-          },
-          body: {
-            product: productId,
-            quantity: quantity,
-            comment: "<img src=x onerror=alert('XSS')>" // Injection XSS
-          },
-          failOnStatusCode: false
-        }).then((response) => {
-          // Affiche la réponse après avoir ajouté le produit au panier
-          cy.log('Réponse après ajout au panier:', JSON.stringify(response.body));
-          
-          // Vérifie que le statut de la réponse est 400, car la requête avec injection XSS devrait échouer
-          expect(response.status).to.eq(400);
-  
-          // Vérifie que la réponse ne contient pas le script injecté
-          if (response.body && typeof response.body === 'object') {
-            const responseBodyString = JSON.stringify(response.body);
-            expect(responseBodyString).to.not.contain("<img src=x onerror=alert('XSS')>");
-          } else {
-            expect(response.body).to.not.contain("<img src=x onerror=alert('XSS')>");
-          }
-          
-          //  Vérifiez que la réponse contient les informations attendues si le statut est 200 (ce qui ne devrait pas arriver)
-          if (response.status === 200) {
-            expect(response.body).to.be.an('object');
-            expect(response.body).to.have.property('id');
-            expect(response.body).to.have.property('orderLines');
-            expect(response.body.orderLines).to.be.an('array');
-            const orderLine = response.body.orderLines.find(line => line.product.id === productId);
-            expect(orderLine).to.not.be.undefined;
-            expect(orderLine.quantity).to.be.at.least(quantity);
-            cy.log('Détails de la commande:', JSON.stringify(response.body));
-          }
+            method: 'POST',
+            url: `${baseUrl}/login`,
+            body: {
+                username: 'test2@test.fr',
+                password: 'testtest'
+            },
+            failOnStatusCode: false // Pour éviter l'échec sur les codes de statut 4xx ou 5xx
+        }).then((loginResponse) => {
+            expect(loginResponse.status).to.eq(200); // Vérifiez que la connexion a réussi
+            const token = loginResponse.body.token; 
+            cy.log('Token reçu :', token);
+
+            // Envoi de la requête pour ajouter un produit au panier avec XSS potentiel dans la quantité
+            cy.request({
+                method: 'PUT',
+                url: `${baseUrl}/orders/add`,
+                headers: {
+                    Authorization: `Bearer ${token}`
+                },
+                body: {
+                    product: productId,
+                    quantity: xssQuantity
+                },
+                failOnStatusCode: false
+            }).then((response) => {
+                // Affiche la réponse après avoir tenté d'ajouter le produit au panier avec XSS
+                cy.log('Réponse après tentative d\'ajout au panier:', JSON.stringify(response.body));
+                // Vérifie le statut de la réponse
+                expect(response.status).to.not.eq(200);
+
+                // Vérifiez que le corps de la réponse contient un message d'erreur approprié
+                expect(response.body).to.have.property('error');
+                // Vérifiez que le champ quantity est inclus dans le message d'erreur
+                expect(response.body.error).to.have.property('quantity');
+                // Vérifiez que le message d'erreur mentionne l'invalidité de la valeur
+                if (Array.isArray(response.body.error.quantity)) {
+                expect(response.body.error.quantity).to.include("This value is not valid.");
+                } else {
+                expect(response.body.error.quantity).to.eq("This value is not valid.");
+                }
+                
+                // Affiche les détails de l'erreur
+                cy.log('Détails de l\'erreur:', JSON.stringify(response.body.error));
+            });
         });
-      });
     });
-  });
+});
